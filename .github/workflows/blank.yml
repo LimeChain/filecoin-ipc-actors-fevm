@@ -1,0 +1,32 @@
+name: Slither Analysis
+
+on: 
+ push:
+    branches: [ main ]
+ pull_request:
+    branches: [ main ]
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+           
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+
+      - name: Run tests
+        run: forge test -vvv
+        
+      - name: Run Slither
+        uses: crytic/slither-action@dev-git-safe-workspace
+        with:
+          fail-on: low
+          target: 'src/'
